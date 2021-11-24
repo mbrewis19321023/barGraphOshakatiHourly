@@ -37,7 +37,7 @@ lines = csvFile.readlines()
 #
 #
 ############################################### MAKE THE DATA FRAME #############################################################
-column_names = ["Year", "Month", "Day", "startTime", "Load", "Solar"]
+column_names = ["Year", "Month", "Day", "startTime", "MaxDemand", "SolarExport", "ImportApparent", "ImportActive"]
 # df = pd.DataFrame(columns=column_names) This is the original code and should be restored
 dfS = pd.DataFrame(columns=column_names)
 dfC = pd.DataFrame(columns=column_names)
@@ -45,13 +45,14 @@ dfC = pd.DataFrame(columns=column_names)
 #
 #
 ############################################### MAKE THE DATA FRAME A PICKEL FROM PNPSCADA #############################################################
+# it works for max demand per hour but thats about it. Needs work to get to where "CENORED" is #
 if (csvFile.name == "pnpscada.csv"):
     for x, i in enumerate(lines):
         p1 = i.split(",")
         try:
 
             if flag == 2:
-                tempList = [int(p2[0]), p2[1], p2[2], p3, temp/2, 0]
+                tempList = [int(p2[0]), p2[1], p2[2], p3, temp/2, 0,0,0]
                 dfS.loc[x] = tempList
                 flag = 0
                 temp = 0
@@ -87,19 +88,28 @@ elif (csvFile.name == "cenored.csv"):
                 r2 = re.findall(dateModify, p3)
                 o1 = p3.split(" ")
                 p1[6] = p1[6].replace(" ", "")
-                p1[4] = p1[4].replace(" ", "")
-                flag += 1
-                tempLoad = float(tempLoad) + float(p1[6])
-                tempSolar = float(tempSolar) + float(p1[4])
+               
 
-                if (flag == 2):
-
-                    tempList = [int(r2[0][2]), int(r2[0][1]), int(
-                        r2[0][0]), o1[1], tempLoad/2, tempSolar/2]
+                if (flag == 0):
+                    pass
+            
+                elif (flag == 1):
+                    firstSol = float(p1[4].replace(" ", ""))
+                    firstLoad = float(p1[6].replace(" ", ""))
+                    firstCons = float(p1[1].replace(" ", ""))
+                    timeTemp = o1[1]
+                    
+                
+                elif (flag == 2):
+                    secSol = float(p1[4].replace(" ", ""))
+                    secLoad = float(p1[6].replace(" ", ""))
+                    secondCons = float(p1[1].replace(" ", ""))
+                    tempList = [int(r2[0][2]), int(r2[0][1]), int(r2[0][0]), timeTemp, (secLoad + firstLoad)/2, (secSol + firstSol)/2,0,(firstCons + secondCons)]
                     dfC.loc[x] = tempList
                     tempLoad = 0
-                    tempSolar = 0
                     flag = 0
+               
+                flag += 1
 
             except:
                 pass

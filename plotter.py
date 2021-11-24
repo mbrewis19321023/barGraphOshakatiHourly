@@ -38,6 +38,7 @@ monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May',
 date = []
 datetick = 0
 load = []
+cons = []
 load2019 = []
 load2020 = []
 load2021 = []
@@ -50,6 +51,12 @@ xAxisTics20 = []
 xAxisTics21 = []
 xTicks = []
 
+################################################# Toggles what graph to make #################################################
+barHourly = 0
+consMonthly = 1
+################################################# Toggles what graph to make #################################################
+
+
 
 for i in range(24):
     xAxisTics19.append(i-0.2)
@@ -59,13 +66,19 @@ for i in range(24):
 
 df = pd.read_pickle("dataHourly.pkl")
 ################################################# this is for max demand per month #################################################
-dM = df.groupby(['Year', 'Month']).Load.max().reset_index().copy()
-dMS = df.groupby(['Year', 'Month']).Solar.sum().reset_index().copy()
+dM = df.groupby(['Year', 'Month']).MaxDemand.max().reset_index().copy()
+dMS = df.groupby(['Year', 'Month']).SolarExport.sum().reset_index().copy()
 ################################################# this is for max demand per month #################################################
+
+################################################# this is for consumption #################################################
+dConsum = df.groupby(['Year', 'Month']).ImportActive.sum().reset_index().copy()
+################################################# this is for consumption #################################################
+
+
 
 ################################################# this is for max demand from 1700 - 2400 #################################################
 dMStartTime = df.groupby(['Year', 'startTime']
-                         ).Load.max().reset_index().copy()
+                         ).SolarExport.mean().reset_index().copy() # to get back make this Load.mean
 ################################################# this is for max demand from 1700 - 2400 #################################################
 
 
@@ -77,19 +90,19 @@ for x, row in dMStartTime.iterrows():
     print(dMStartTime.iloc[x]['startTime'])
     tempV = str(dMStartTime.iloc[x]['startTime']).replace(":", "")
     if dMStartTime.iloc[x]['Year'] == 19:
-        load2019.append(dMStartTime.iloc[x]['Load'])
+        load2019.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
         time.append(dMStartTime.iloc[x]['startTime'])
     if dMStartTime.iloc[x]['Year'] == 20:
-        load2020.append(dMStartTime.iloc[x]['Load'])
+        load2020.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
     if dMStartTime.iloc[x]['Year'] == 21:
-        load2021.append(dMStartTime.iloc[x]['Load'])
+        load2021.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
     # print(tempV)
     # print(dMStartTime.iloc[x]['startTime'])
     # print()
     datetick = x
-for x, row in dM.iterrows():
-    date.append(str(dM.iloc[x]['Year']) + '-' + str(dM.iloc[x]['Month']))
-    load.append(float(dM.iloc[x]['Load']))
+for x, row in dConsum.iterrows():
+    date.append(str(dConsum.iloc[x]['Year']) + '-' + str(dConsum.iloc[x]['Month']))
+    cons.append(float(dConsum.iloc[x]['ImportActive']))
 
 for x, i in enumerate(date):
     a = i.split("-")
@@ -230,29 +243,33 @@ try:
 except IndexError:
     pass
 
+if (barHourly == 1):
+    plt.title("Average solar export for each hour 1 July 2020 - 1 September 2021 ")
+    plt.xticks(xAxisTics20, xTicks, rotation='vertical')
+    plt.xlabel("Time", labelpad=20)
+    plt.ylabel("Average Energy Export (VAh)")
+    # plt.plot(xAxisTics20, load2019, 'bo-', label="Demand", )
+    # plt.bar(xAxisTics19, load2019, color='#e67e22', width=0.1,
+    #         label="2019 (Averaged 3 month data set)")
+    plt.bar(xAxisTics20, load2020, color='green', width=0.1,
+            label="2020 (Averaged 6 month data set)")
+    plt.bar(xAxisTics21, load2021, color='blue', width=0.1,
+            label="2021 (Averaged 8 month data set)")
+    # for i, v in enumerate(load2019):
+    #     plt.text(i-0.3, v + 1, "%.2f" %
+    #              v, rotation=90, ha="center", color="#e67e22")
+    for i, v in enumerate(load2020):
+        plt.text(i, v + 100, "%.2f" % v, rotation=90, ha="center", color="green")
+    for i, v in enumerate(load2021):
+        plt.text(i+0.3, v + 100, "%.2f" % v, rotation=90, ha="center", color="blue")
+    plt.ylim(0, 5000)
+    plt.legend()
 
-plt.title("Average Hourly Maximum Demand from Oct 2019 - Oct 2021")
-plt.xticks(xAxisTics20, xTicks, rotation='vertical')
-plt.xlabel("Time", labelpad=20)
-plt.ylabel("Average Demand (kVA)")
-# plt.plot(xAxisTics20, load2019, 'bo-', label="Demand", )
-# plt.bar(xAxisTics19, load2019, color='#e67e22', width=0.1,
-#         label="2019 (Averaged 3 month data set)")
-plt.bar(xAxisTics20, load2020, color='green', width=0.1,
-        label="2020 (Averaged 12 month data set)")
-plt.bar(xAxisTics21, load2021, color='blue', width=0.1,
-        label="2021 (Averaged 10 month data set)")
-# for i, v in enumerate(load2019):
-#     plt.text(i-0.3, v + 1, "%.2f" %
-#              v, rotation=90, ha="center", color="#e67e22")
-for i, v in enumerate(load2020):
-    plt.text(i, v + 1, "%.2f" % v, rotation=90, ha="center", color="green")
-for i, v in enumerate(load2021):
-    plt.text(i+0.3, v + 1, "%.2f" % v, rotation=90, ha="center", color="blue")
-plt.ylim(0, 15000)
-plt.legend()
-
-
+elif (consMonthly == 1):
+     plt.title("Consumption")
+     plt.plot(date, cons, 'bo-', label="Consumption", )
+     for i, v in enumerate(cons):
+        plt.text(i, v + 10000, "%.2f" % v, rotation=90, ha="center", color="blue")
 plt.show()
 
 print()
