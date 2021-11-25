@@ -42,6 +42,9 @@ cons = []
 load2019 = []
 load2020 = []
 load2021 = []
+import2019 = []
+import2020 = []
+import2021 = []
 nightLoad = []
 time = []
 powerFactor = []
@@ -52,8 +55,8 @@ xAxisTics21 = []
 xTicks = []
 
 ################################################# Toggles what graph to make #################################################
-barHourly = 0
-consMonthly = 1
+barHourly = 1
+consMonthly = 0
 ################################################# Toggles what graph to make #################################################
 
 
@@ -77,29 +80,54 @@ dConsum = df.groupby(['Year', 'Month']).ImportActive.sum().reset_index().copy()
 
 
 ################################################# this is for max demand from 1700 - 2400 #################################################
-dMStartTime = df.groupby(['Year', 'startTime']
+solarExportMeanDFG = df.groupby(['Year', 'startTime']
                          ).SolarExport.mean().reset_index().copy() # to get back make this Load.mean
+importActiveMeanDFG = df.groupby(['Year', 'startTime']
+                         ).ImportActive.mean().reset_index().copy() 
 ################################################# this is for max demand from 1700 - 2400 #################################################
 
 
-for x, row in dMStartTime.iterrows():
+for x, row in solarExportMeanDFG.iterrows():
     ################################################# this is for max demand per month #################################################
     # date.append(str(dM.iloc[x]['Year']) + '-' + str(dM.iloc[x]['Month']))
     # load.append(float(dM.iloc[x]['Load']))
     ################################################# this is for max demand per month #################################################
-    print(dMStartTime.iloc[x]['startTime'])
-    tempV = str(dMStartTime.iloc[x]['startTime']).replace(":", "")
-    if dMStartTime.iloc[x]['Year'] == 19:
-        load2019.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
-        time.append(dMStartTime.iloc[x]['startTime'])
-    if dMStartTime.iloc[x]['Year'] == 20:
-        load2020.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
-    if dMStartTime.iloc[x]['Year'] == 21:
-        load2021.append(dMStartTime.iloc[x]['SolarExport']) # to get back make this 'Load'
+    
+    ############# Note that due to the way you set this up initially the variable name remains load2019 
+    print(solarExportMeanDFG.iloc[x]['startTime'])
+    tempV = str(solarExportMeanDFG.iloc[x]['startTime']).replace(":", "")
+    if solarExportMeanDFG.iloc[x]['Year'] == 19:
+        load2019.append(solarExportMeanDFG.iloc[x]['SolarExport']) # to get back make this 'Load'
+        time.append(solarExportMeanDFG.iloc[x]['startTime'])
+    if solarExportMeanDFG.iloc[x]['Year'] == 20:
+        load2020.append(solarExportMeanDFG.iloc[x]['SolarExport']) # to get back make this 'Load'
+    if solarExportMeanDFG.iloc[x]['Year'] == 21:
+        load2021.append(solarExportMeanDFG.iloc[x]['SolarExport']) # to get back make this 'Load'
     # print(tempV)
     # print(dMStartTime.iloc[x]['startTime'])
     # print()
     datetick = x
+
+for x, row in importActiveMeanDFG.iterrows():
+    ################################################# this is for max demand per month #################################################
+    # date.append(str(dM.iloc[x]['Year']) + '-' + str(dM.iloc[x]['Month']))
+    # load.append(float(dM.iloc[x]['Load']))
+    ################################################# this is for max demand per month #################################################
+    
+    ############# Note that due to the way you set this up initially the variable name remains load2019 
+    tempV = str(importActiveMeanDFG.iloc[x]['startTime']).replace(":", "")
+    if importActiveMeanDFG.iloc[x]['Year'] == 19:
+        import2019.append(importActiveMeanDFG.iloc[x]['ImportActive']) # to get back make this 'Load'
+        time.append(importActiveMeanDFG.iloc[x]['startTime'])
+    if importActiveMeanDFG.iloc[x]['Year'] == 20:
+        import2020.append(importActiveMeanDFG.iloc[x]['ImportActive']) # to get back make this 'Load'
+    if importActiveMeanDFG.iloc[x]['Year'] == 21:
+        import2021.append(importActiveMeanDFG.iloc[x]['ImportActive']) # to get back make this 'Load'
+    # print(tempV)
+    # print(dMStartTime.iloc[x]['startTime'])
+    # print()
+    datetick = x
+
 for x, row in dConsum.iterrows():
     date.append(str(dConsum.iloc[x]['Year']) + '-' + str(dConsum.iloc[x]['Month']))
     cons.append(float(dConsum.iloc[x]['ImportActive']))
@@ -132,6 +160,116 @@ for x, i in enumerate(date):
         date[x] = "Dec" + '-' + "20" + str(a[0].split('.')[0])
 
 
+
+
+################################################# should obviously be in a function #################################################
+try:
+    import2019 = deque(import2019)
+    import2019.rotate(10)
+    el0 = import2019[10]
+    el10 = import2019[11]
+    el11 = import2019[12]
+    el12 = import2019[13]
+    el13 = import2019[14]
+    el14 = import2019[15]
+    el15 = import2019[16]
+    el16 = import2019[17]
+    el17 = import2019[18]
+    el18 = import2019[19]
+    el19 = import2019[20]
+    el1 = import2019[21]
+    el20 = import2019[22]
+    el21 = import2019[23]
+    el22 = import2019[0]
+    el23 = import2019[1]
+    import2019[0] = el0
+    import2019[1] = el1
+    import2019[10] = el10
+    import2019[11] = el11
+    import2019[12] = el12
+    import2019[13] = el13
+    import2019[14] = el14
+    import2019[15] = el15
+    import2019[16] = el16
+    import2019[17] = el17
+    import2019[18] = el18
+    import2019[19] = el19
+    import2019[20] = el20
+    import2019[21] = el21
+    import2019[22] = el22
+    import2019[23] = el23
+    ################################################# should obviously be in a function #################################################
+    import2020 = deque(import2020)
+    import2020.rotate(10)
+    el0 = import2020[10]
+    el10 = import2020[11]
+    el11 = import2020[12]
+    el12 = import2020[13]
+    el13 = import2020[14]
+    el14 = import2020[15]
+    el15 = import2020[16]
+    el16 = import2020[17]
+    el17 = import2020[18]
+    el18 = import2020[19]
+    el19 = import2020[20]
+    el1 = import2020[21]
+    el20 = import2020[22]
+    el21 = import2020[23]
+    el22 = import2020[0]
+    el23 = import2020[1]
+    import2020[0] = el0
+    import2020[1] = el1
+    import2020[10] = el10
+    import2020[11] = el11
+    import2020[12] = el12
+    import2020[13] = el13
+    import2020[14] = el14
+    import2020[15] = el15
+    import2020[16] = el16
+    import2020[17] = el17
+    import2020[18] = el18
+    import2020[19] = el19
+    import2020[20] = el20
+    import2020[21] = el21
+    import2020[22] = el22
+    import2020[23] = el23
+    ################################################# should obviously be in a function #################################################
+    import2021 = deque(import2021)
+    import2021.rotate(10)
+    el0 = import2021[10]
+    el10 = import2021[11]
+    el11 = import2021[12]
+    el12 = import2021[13]
+    el13 = import2021[14]
+    el14 = import2021[15]
+    el15 = import2021[16]
+    el16 = import2021[17]
+    el17 = import2021[18]
+    el18 = import2021[19]
+    el19 = import2021[20]
+    el1 = import2021[21]
+    el20 = import2021[22]
+    el21 = import2021[23]
+    el22 = import2021[0]
+    el23 = import2021[1]
+    import2021[0] = el0
+    import2021[1] = el1
+    import2021[10] = el10
+    import2021[11] = el11
+    import2021[12] = el12
+    import2021[13] = el13
+    import2021[14] = el14
+    import2021[15] = el15
+    import2021[16] = el16
+    import2021[17] = el17
+    import2021[18] = el18
+    import2021[19] = el19
+    import2021[20] = el20
+    import2021[21] = el21
+    import2021[22] = el22
+    import2021[23] = el23
+except IndexError:
+    pass
 
 
 ################################################# should obviously be in a function #################################################
@@ -243,24 +381,25 @@ try:
 except IndexError:
     pass
 
+
+
 if (barHourly == 1):
-    plt.title("Average solar export for each hour 1 July 2020 - 1 September 2021 ")
+    plt.title("Average Solar Export vs Average Import from CENORED per hour averaged over the year 2020")
     plt.xticks(xAxisTics20, xTicks, rotation='vertical')
     plt.xlabel("Time", labelpad=20)
-    plt.ylabel("Average Energy Export (VAh)")
     # plt.plot(xAxisTics20, load2019, 'bo-', label="Demand", )
     # plt.bar(xAxisTics19, load2019, color='#e67e22', width=0.1,
     #         label="2019 (Averaged 3 month data set)")
     plt.bar(xAxisTics20, load2020, color='green', width=0.1,
-            label="2020 (Averaged 6 month data set)")
-    plt.bar(xAxisTics21, load2021, color='blue', width=0.1,
-            label="2021 (Averaged 8 month data set)")
+            label="Export To Cenored (VAh)")
+    plt.bar(xAxisTics21, import2020, color='blue', width=0.1,
+              label="Import From Cenored (Wh)")
     # for i, v in enumerate(load2019):
     #     plt.text(i-0.3, v + 1, "%.2f" %
     #              v, rotation=90, ha="center", color="#e67e22")
     for i, v in enumerate(load2020):
         plt.text(i, v + 100, "%.2f" % v, rotation=90, ha="center", color="green")
-    for i, v in enumerate(load2021):
+    for i, v in enumerate(import2020):
         plt.text(i+0.3, v + 100, "%.2f" % v, rotation=90, ha="center", color="blue")
     plt.ylim(0, 5000)
     plt.legend()
